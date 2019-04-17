@@ -6,7 +6,7 @@ function getSquare(){
 	const hors=['a','b','c','d','e','f','g','h'];
 	let h=Math.trunc(num/8);
 	let v=1+(num%8);
-	return hors[h]+v;
+	return "<span class=\"square\">"+hors[h]+v+"</span>";
 }
 
 function getColor(){
@@ -38,7 +38,8 @@ function bodyLoad(){
 
 function submitAnswer(){
 	let c=getColor();
-	let r = getColor()==this.id ? "Yes. "+getSquare()+" is "+c  : "No. "+getSquare()+" is "+c;
+	let l=getSquare()+" is "+c;
+	let r = getColor()==this.id ? "<span class=\"right\">Yes.</span> "+ l : "<span class=\"wrong\">No.</span> "+l;
 	document.querySelector("#feedback").innerHTML=r;
-	window.setTimeout(prepareQuestion,2000);
+	window.setTimeout(prepareQuestion,3000);
 }

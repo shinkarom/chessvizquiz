@@ -1,2 +1,5 @@
-html { display: table; margin: auto; }
-main { display: table; margin: auto; }
+html { display: table; margin: 0 auto; font-size: 12px}
+main { display: table; margin: 0 auto; }
+.square { font-weight: bold; }
+.right { color: green; }
+.wrong { color: red; }
