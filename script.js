@@ -24,10 +24,19 @@ function generateSquare(){
 	console.log(num);
 }
 
+function setButtons(what){
+	let b = document.querySelectorAll("button")
+	for(var i=0;i<b.length;i++){
+		b[i].disabled=!what;
+	}	
+}
+
 function prepareQuestion(){
 	document.querySelector("#feedback").innerHTML="";
+	document.querySelector("#result").innerHTML="";
 	generateSquare();
 	document.querySelector("#question").innerHTML="What color is "+getSquare()+"?";
+	setButtons(true);
 }
 
 function bodyLoad(){
@@ -38,8 +47,10 @@ function bodyLoad(){
 
 function submitAnswer(){
 	let c=getColor();
-	let l=getSquare()+" is "+c;
-	let r = getColor()==this.id ? "<span class=\"right\">Yes.</span> "+ l : "<span class=\"wrong\">No.</span> "+l;
-	document.querySelector("#feedback").innerHTML=r;
+	let l=getSquare()+" is "+c;;
+	document.querySelector("#feedback").innerHTML=l;
+	document.querySelector("#result").innerHTML=getColor()==this.id?"Yes":"No";
+	document.querySelector("#result").className=getColor()==this.id?"right":"wrong";
+	setButtons(false);
 	window.setTimeout(prepareQuestion,3000);
 }
