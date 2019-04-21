@@ -3,3 +3,4 @@ main { display: table; margin: 0 auto; }
 .square { font-weight: bold; }
 .right { color: green; }
 .wrong { color: red; }
+.neutral {  }
