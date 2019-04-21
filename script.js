@@ -89,8 +89,9 @@ class QuestionTwoSquareColors extends Question{
 }
 
 function getRandomQuestion(){
-	let questionTypes = [QuestionTwoSquareColors];
-	let selectedType = questionTypes[getRnd(0,questionTypes.length-1)];
+	let questionTypes = [QuestionSquareColor,QuestionTwoSquareColors];
+	let ind=getRnd(0,questionTypes.length);
+	let selectedType = questionTypes[ind];
 	return new selectedType();
 }
 
