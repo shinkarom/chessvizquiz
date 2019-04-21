@@ -17,6 +17,10 @@ class Square{
 	getColor(){
 		return this.isBlack() ? "black" : "white";
 	}
+	
+	compare(second){
+		return (this.v==second.v)&&(this.h==second.h);
+	}
 }
 
 function squareFromNum(num){
@@ -49,7 +53,7 @@ class QuestionSquareColor extends Question {
 	}
 	
 	getButtons(){
-		return {black:'black',white:'white'};
+		return {black:'Black',white:'White'};
 	}
 	getFeedback(btnid){
 		return (btnid==this.square.getColor()) ?
@@ -58,8 +62,36 @@ class QuestionSquareColor extends Question {
 	}
 }
 
+class QuestionTwoSquareColors extends Question{
+	constructor(){
+		super();
+		this.square1 = generateSquare();
+		do{
+			this.square2 = generateSquare();
+		}while(this.square1.compare(this.square2));
+	}
+	
+	getQuestionText(){
+		return `Are ${this.square1.toHTMLString()} and ${this.square2.toHTMLString()} the same color?`;
+	}
+	
+	getButtons(){
+		return {yes:'Yes',no:'no'};
+	}
+	
+	getFeedback(btnid){
+		let txt = `${this.square1.toHTMLString()} is ${this.square1.getColor()} and ${this.square2.toHTMLString()} is ${this.square2.getColor()}`;
+		let res = this.square1.isBlack()==this.square2.isBlack();
+		return (res&&btnid=="yes")||(!res&&btnid=="no") ? 
+			{className:'right',answer:"Correct",explanation:txt} :
+			{className:'wrong',answer:"Incorrect",explanation:txt}
+	}
+}
+
 function getRandomQuestion(){
-	return new QuestionSquareColor();
+	let questionTypes = [QuestionTwoSquareColors];
+	let selectedType = questionTypes[getRnd(0,questionTypes.length-1)];
+	return new selectedType();
 }
 
 var question;
