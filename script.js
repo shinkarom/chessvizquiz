@@ -30,6 +30,10 @@ class Square{
 		return (!this.compare(second))&&(Math.abs(this.h-second.h)==Math.abs(this.v-second.v));
 	}
 	
+	isOnOrthogonal(second){
+		return (!this.compare(second))&&((this.h-second.h==0)||(this.v-second.v==0));
+	}
+	
 }
 
 function squareFromNum(num){
@@ -114,7 +118,7 @@ class QuestionBishopMove extends Question{
 	}
 	
 	getQuestionText(){
-		return `Can bishop on ${this.square1.toHTMLString()} move to ${this.square2.toHTMLString()}?`;
+		return `Can a bishop on ${this.square1.toHTMLString()} move to ${this.square2.toHTMLString()}?`;
 	}
 	
 	getButtons(){
@@ -130,8 +134,41 @@ class QuestionBishopMove extends Question{
 	}
 }
 
+class QuestionRookMove extends Question{
+	constructor(){
+		super();
+		this.square1 =generateSquare();
+		this.orthogonals = [];
+		this.nonOrthogonals = [];
+		for(var n=0;n<=63;n++){
+			let tmpSquare = squareFromNum(n);
+			if(this.square1.compare(tmpSquare))
+				continue;
+			(this.square1.isOnOrthogonal(tmpSquare) ? this.orthogonals : this.nonOrthogonals).push(tmpSquare);
+		}
+		let a = (getRnd(0,2)==0) ? this.orthogonals : this.nonOrthogonals;
+		this.square2 = choice(a);
+	}
+	
+	getQuestionText(){
+		return `Can a rook on ${this.square1.toHTMLString()} move to ${this.square2.toHTMLString()}?`;
+	}
+	
+	getButtons(){
+		return {yes: "Yes",no:"No"};
+	}
+	
+	getFeedback(btnid){
+		let txt="";
+		let res = this.square1.isOnOrthogonal(this.square2);
+		return (res&&btnid=="yes")||(!res&&btnid=="no") ? 
+			{className:'right',answer:"Correct",explanation:txt} :
+			{className:'wrong',answer:"Incorrect",explanation:txt}
+	}
+}
+
 function getRandomQuestion(){
-	let questionTypes = [QuestionSquareColor,QuestionTwoSquareColors,QuestionBishopMove];
+	let questionTypes = [QuestionSquareColor,QuestionTwoSquareColors,QuestionBishopMove,QuestionRookMove];
 	let selectedType = choice(questionTypes);
 	return new selectedType();
 }
