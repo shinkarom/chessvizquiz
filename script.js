@@ -34,6 +34,11 @@ class Square{
 		return (!this.compare(second))&&((this.h-second.h==0)||(this.v-second.v==0));
 	}
 	
+	isOnKnightMove(second){
+		let l1 = (this.h-second.h==2)&&(this.v-second.v==1);
+		let l2 = (this.h-second.h==1)&&(this.v-second.v==2);
+		return (!this.compare(second))&&(l1||l2);
+	}
 }
 
 function squareFromNum(num){
@@ -167,8 +172,41 @@ class QuestionRookMove extends Question{
 	}
 }
 
+class QuestionKnightMove extends Question{
+	constructor(){
+		super();
+		this.square1 =generateSquare();
+		this.movables = [];
+		this.nonMovables = [];
+		for(var n=0;n<=63;n++){
+			let tmpSquare = squareFromNum(n);
+			if(this.square1.compare(tmpSquare))
+				continue;
+			(this.square1.isOnKnightMove(tmpSquare) ? this.movables : this.nonMovables).push(tmpSquare);
+		}
+		let a = (getRnd(0,2)==0) ? this.movables : this.nonMovables;
+		this.square2 = choice(a);
+	}
+	
+	getQuestionText(){
+		return `Can a knight on ${this.square1.toHTMLString()} move to ${this.square2.toHTMLString()}?`;
+	}
+	
+	getButtons(){
+		return {yes: "Yes",no:"No"};
+	}
+	
+	getFeedback(btnid){
+		let txt="";
+		let res = this.square1.isOnKnightMove(this.square2);
+		return (res&&btnid=="yes")||(!res&&btnid=="no") ? 
+			{className:'right',answer:"Correct",explanation:txt} :
+			{className:'wrong',answer:"Incorrect",explanation:txt}
+	}
+}
+
 function getRandomQuestion(){
-	let questionTypes = [QuestionSquareColor,QuestionTwoSquareColors,QuestionBishopMove,QuestionRookMove];
+	let questionTypes = [QuestionSquareColor,QuestionTwoSquareColors,QuestionBishopMove,QuestionRookMove,QuestionKnightMove];
 	let selectedType = choice(questionTypes);
 	return new selectedType();
 }
