@@ -22,23 +22,40 @@ class Square{
 		return (this.v==second.v)&&(this.h==second.h);
 	}
 	
-	isSameColor(second){
-		return this.isBlack()==second.isBlack();
-	}
-	
-	isOnDiagonal(second){
-		return (!this.compare(second))&&(Math.abs(this.h-second.h)==Math.abs(this.v-second.v));
-	}
-	
-	isOnOrthogonal(second){
-		return (!this.compare(second))&&((Math.abs(this.h-second.h)==0)||(Math.abs(this.v-second.v)==0));
-	}
-	
-	isOnKnightMove(second){
-		let l1 = (Math.abs(this.h-second.h)==2)&&(Math.abs(this.v-second.v)==1);
-		let l2 = (Math.abs(this.h-second.h)==1)&&(Math.abs(this.v-second.v)==2);
-		return (!this.compare(second))&&(l1||l2);
-	}
+}
+
+function areSquaresSameColor(square1,square2){
+	return square1.isBlack()==square2.isBlack();
+}
+
+function areSquaresOnDiagonal(square1,square2){
+	return (!square1.compare(square2))&&(Math.abs(square1.h-square2.h)==Math.abs(square1.v-square2.v));
+}
+
+function areSquaresOnOrthogonal(square1,square2){
+	return (!square1.compare(square2))&&((Math.abs(square1.h-square2.h)==0)||(Math.abs(square1.v-square2.v)==0));
+}
+
+function areSquaresOnKnightMove(square1,square2){
+		let l1 = (Math.abs(square1.h-square2.h)==2)&&(Math.abs(square1.v-square2.v)==1);
+		let l2 = (Math.abs(square1.h-square2.h)==1)&&(Math.abs(square1.v-square2.v)==2);
+		return l1||l2;
+}
+
+function areSquaresOnWhitePawnTake(square1,square2){
+	return (square2.v==square1.v+1)&&(Math.abs(square1.h-square2.h)==1);
+}
+
+function areSquaresOnBlackPawnTake(square1,square2){
+	return (square2.v==square1.v-1)&&(Math.abs(square1.h-square2.h)==1);
+}
+
+function areSquaresOnWhitePawnMove(square1,square2){
+	return (square2.v==square1.v+1)&&(square2.h==square1.h);
+}
+
+function areSquaresOnBlackPawnMove(square1,square2){
+	return (square2.v==square1.v-1)&&(square2.h==square1.h);
 }
 
 function squareFromNum(num){
@@ -99,97 +116,35 @@ class QuestionTwoSquareColors extends Question{
 	
 	getFeedback(btnid){
 		let txt = `${this.square1.toHTMLString()} is ${this.square1.getColor()} and ${this.square2.toHTMLString()} is ${this.square2.getColor()}`;
-		let res = this.square1.isBlack()==this.square2.isBlack();
+		let res = areSquaresSameColor(this.square1,this.square2);
 		return (res&&btnid=="yes")||(!res&&btnid=="no") ? 
 			{className:'right',answer:"Correct",explanation:txt} :
 			{className:'wrong',answer:"Incorrect",explanation:txt}
 	}
 }
 
-class QuestionBishopMove extends Question{
+class QuestionPieceMove extends Question{
 	constructor(){
 		super();
-		this.square1 =generateSquare();
-		this.diagonals = [];
-		this.nonDiagonals = [];
-		for(var n=0;n<=63;n++){
-			let tmpSquare = squareFromNum(n);
-			if(this.square1.compare(tmpSquare))
-				continue;
-			(this.square1.isOnDiagonal(tmpSquare) ? this.diagonals : this.nonDiagonals).push(tmpSquare);
-		}
-		let a = (getRnd(0,2)==0) ? this.diagonals : this.nonDiagonals;
-		this.square2 = choice(a);
-	}
-	
-	getQuestionText(){
-		return `Can a bishop on ${this.square1.toHTMLString()} move to ${this.square2.toHTMLString()}?`;
-	}
-	
-	getButtons(){
-		return {yes: "Yes",no:"No"};
-	}
-	
-	getFeedback(btnid){
-		let txt="";
-		let res = this.square1.isOnDiagonal(this.square2);
-		return (res&&btnid=="yes")||(!res&&btnid=="no") ? 
-			{className:'right',answer:"Correct",explanation:txt} :
-			{className:'wrong',answer:"Incorrect",explanation:txt}
-	}
-}
-
-class QuestionRookMove extends Question{
-	constructor(){
-		super();
-		this.square1 =generateSquare();
-		this.orthogonals = [];
-		this.nonOrthogonals = [];
-		for(var n=0;n<=63;n++){
-			let tmpSquare = squareFromNum(n);
-			if(this.square1.compare(tmpSquare))
-				continue;
-			(this.square1.isOnOrthogonal(tmpSquare) ? this.orthogonals : this.nonOrthogonals).push(tmpSquare);
-		}
-		let a = (getRnd(0,2)==0) ? this.orthogonals : this.nonOrthogonals;
-		this.square2 = choice(a);
-	}
-	
-	getQuestionText(){
-		return `Can a rook on ${this.square1.toHTMLString()} move to ${this.square2.toHTMLString()}?`;
-	}
-	
-	getButtons(){
-		return {yes: "Yes",no:"No"};
-	}
-	
-	getFeedback(btnid){
-		let txt="";
-		let res = this.square1.isOnOrthogonal(this.square2);
-		return (res&&btnid=="yes")||(!res&&btnid=="no") ? 
-			{className:'right',answer:"Correct",explanation:txt} :
-			{className:'wrong',answer:"Incorrect",explanation:txt}
-	}
-}
-
-class QuestionKnightMove extends Question{
-	constructor(){
-		super();
-		this.square1 =generateSquare();
+		let pieces = [{pieceName:"bishop",predicate:areSquaresOnDiagonal},{pieceName:"rook",predicate:areSquaresOnOrthogonal},{pieceName:"knight",predicate:areSquaresOnKnightMove},{pieceName:"white pawn",predicate:areSquaresOnWhitePawnMove},{pieceName:"black pawn",predicate:areSquaresOnBlackPawnMove}];
+		let selectedPiece = choice(pieces);
+		this.pieceName = selectedPiece.pieceName;
+		this.predicate = selectedPiece.predicate;
+		this.square1 = generateSquare();
 		this.movables = [];
 		this.nonMovables = [];
 		for(var n=0;n<=63;n++){
 			let tmpSquare = squareFromNum(n);
 			if(this.square1.compare(tmpSquare))
 				continue;
-			(this.square1.isOnKnightMove(tmpSquare) ? this.movables : this.nonMovables).push(tmpSquare);
+			(this.predicate(this.square1,tmpSquare) ? this.movables : this.nonMovables).push(tmpSquare);
 		}
 		let a = (getRnd(0,2)==0) ? this.movables : this.nonMovables;
 		this.square2 = choice(a);
 	}
 	
 	getQuestionText(){
-		return `Can a knight on ${this.square1.toHTMLString()} move to ${this.square2.toHTMLString()}?`;
+		return `Can a ${this.pieceName} on ${this.square1.toHTMLString()} move to ${this.square2.toHTMLString()}?`;
 	}
 	
 	getButtons(){
@@ -198,7 +153,7 @@ class QuestionKnightMove extends Question{
 	
 	getFeedback(btnid){
 		let txt="";
-		let res = this.square1.isOnKnightMove(this.square2);
+		let res = this.predicate(this.square1,this.square2);
 		return (res&&btnid=="yes")||(!res&&btnid=="no") ? 
 			{className:'right',answer:"Correct",explanation:txt} :
 			{className:'wrong',answer:"Incorrect",explanation:txt}
@@ -206,7 +161,7 @@ class QuestionKnightMove extends Question{
 }
 
 function getRandomQuestion(){
-	let questionTypes = [QuestionSquareColor,QuestionTwoSquareColors,QuestionBishopMove,QuestionRookMove,QuestionKnightMove];
+	let questionTypes = [QuestionSquareColor,QuestionTwoSquareColors,QuestionPieceMove];
 	let selectedType = choice(questionTypes);
 	return new selectedType();
 }
