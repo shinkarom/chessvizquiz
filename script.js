@@ -31,12 +31,12 @@ class Square{
 	}
 	
 	isOnOrthogonal(second){
-		return (!this.compare(second))&&((this.h-second.h==0)||(this.v-second.v==0));
+		return (!this.compare(second))&&((Math.abs(this.h-second.h)==0)||(Math.abs(this.v-second.v)==0));
 	}
 	
 	isOnKnightMove(second){
-		let l1 = (this.h-second.h==2)&&(this.v-second.v==1);
-		let l2 = (this.h-second.h==1)&&(this.v-second.v==2);
+		let l1 = (Math.abs(this.h-second.h)==2)&&(Math.abs(this.v-second.v)==1);
+		let l2 = (Math.abs(this.h-second.h)==1)&&(Math.abs(this.v-second.v)==2);
 		return (!this.compare(second))&&(l1||l2);
 	}
 }
