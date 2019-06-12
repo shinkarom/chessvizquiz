@@ -21,6 +21,15 @@ class Square{
 	compare(second){
 		return (this.v==second.v)&&(this.h==second.h);
 	}
+	
+	isSameColor(second){
+		return this.isBlack()==second.isBlack();
+	}
+	
+	isOnDiagonal(second){
+		return (!this.compare(second))&&(Math.abs(this.h-second.h)==Math.abs(this.v-second.v));
+	}
+	
 }
 
 function squareFromNum(num){
@@ -88,10 +97,42 @@ class QuestionTwoSquareColors extends Question{
 	}
 }
 
+class QuestionBishopMove extends Question{
+	constructor(){
+		super();
+		this.square1 =generateSquare();
+		this.diagonals = [];
+		this.nonDiagonals = [];
+		for(var n=0;n<=63;n++){
+			let tmpSquare = squareFromNum(n);
+			if(this.square1.compare(tmpSquare))
+				continue;
+			(this.square1.isOnDiagonal(tmpSquare) ? this.diagonals : this.nonDiagonals).push(tmpSquare);
+		}
+		let a = (getRnd(0,2)==0) ? this.diagonals : this.nonDiagonals;
+		this.square2 = choice(a);
+	}
+	
+	getQuestionText(){
+		return `Can bishop on ${this.square1.toHTMLString()} move to ${this.square2.toHTMLString()}?`;
+	}
+	
+	getButtons(){
+		return {yes: "Yes",no:"No"};
+	}
+	
+	getFeedback(btnid){
+		let txt="";
+		let res = this.square1.isOnDiagonal(this.square2);
+		return (res&&btnid=="yes")||(!res&&btnid=="no") ? 
+			{className:'right',answer:"Correct",explanation:txt} :
+			{className:'wrong',answer:"Incorrect",explanation:txt}
+	}
+}
+
 function getRandomQuestion(){
-	let questionTypes = [QuestionSquareColor,QuestionTwoSquareColors];
-	let ind=getRnd(0,questionTypes.length);
-	let selectedType = questionTypes[ind];
+	let questionTypes = [QuestionSquareColor,QuestionTwoSquareColors,QuestionBishopMove];
+	let selectedType = choice(questionTypes);
 	return new selectedType();
 }
 
@@ -99,6 +140,10 @@ var question;
 
 function getRnd(a,b){
 	return Math.trunc(Math.random()*(b-a)+a);
+}
+
+function choice(ar){
+	return ar[getRnd(0,ar.length)];
 }
 
 function generateSquare(){
