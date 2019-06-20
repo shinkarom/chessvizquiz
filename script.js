@@ -28,12 +28,16 @@ function areSquaresSameColor(square1,square2){
 	return square1.isBlack()==square2.isBlack();
 }
 
-function areSquaresOnDiagonal(square1,square2){
+function areSquaresOnBishopMove(square1,square2){
 	return (!square1.compare(square2))&&(Math.abs(square1.h-square2.h)==Math.abs(square1.v-square2.v));
 }
 
-function areSquaresOnOrthogonal(square1,square2){
+function areSquaresOnRookMove(square1,square2){
 	return (!square1.compare(square2))&&((Math.abs(square1.h-square2.h)==0)||(Math.abs(square1.v-square2.v)==0));
+}
+
+function areSquaresOnQueenMove(square1,square2){
+	return areSquaresOnBishopMove(square1,square2)&&areSquaresOnRookMove(square1,square2);
 }
 
 function areSquaresOnKnightMove(square1,square2){
@@ -42,20 +46,8 @@ function areSquaresOnKnightMove(square1,square2){
 		return l1||l2;
 }
 
-function areSquaresOnWhitePawnTake(square1,square2){
-	return (square2.v==square1.v+1)&&(Math.abs(square1.h-square2.h)==1);
-}
-
-function areSquaresOnBlackPawnTake(square1,square2){
-	return (square2.v==square1.v-1)&&(Math.abs(square1.h-square2.h)==1);
-}
-
-function areSquaresOnWhitePawnMove(square1,square2){
-	return (square2.v==square1.v+1)&&(square2.h==square1.h);
-}
-
-function areSquaresOnBlackPawnMove(square1,square2){
-	return (square2.v==square1.v-1)&&(square2.h==square1.h);
+function areSquaresOnKingMove(square1,square2){
+	return (!square1.compare(square2))&&(Math.abs(square1.v-square2.v)<=1)&&(Math.abs(square1.h-square2.h)<=1);
 }
 
 function squareFromNum(num){
@@ -126,7 +118,7 @@ class QuestionTwoSquareColors extends Question{
 class QuestionPieceMove extends Question{
 	constructor(){
 		super();
-		let pieces = [{pieceName:"bishop",predicate:areSquaresOnDiagonal},{pieceName:"rook",predicate:areSquaresOnOrthogonal},{pieceName:"knight",predicate:areSquaresOnKnightMove},{pieceName:"white pawn",predicate:areSquaresOnWhitePawnMove},{pieceName:"black pawn",predicate:areSquaresOnBlackPawnMove}];
+		let pieces = [{pieceName:"bishop",predicate:areSquaresOnBishopMove},{pieceName:"rook",predicate:areSquaresOnRookMove},{pieceName:"knight",predicate:areSquaresOnKnightMove},{pieceName:"queen",predicate:areSquaresOnQueenMove},{pieceName:"king",predicate:areSquaresOnKingMove}];
 		let selectedPiece = choice(pieces);
 		this.pieceName = selectedPiece.pieceName;
 		this.predicate = selectedPiece.predicate;
